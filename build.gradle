@@ -1,34 +1,15 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.github.dcendents.android-maven'
-//apply plugin: 'com.jfrog.bintray'
+//apply plugin: 'com.novoda.bintray-release'
 
 // This is the library version used when deploying the artifact
 version = "1.0.1"
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.1'
-        classpath 'com.github.dcendents:android-maven-plugin:1.2'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        jcenter()
-    }
-}
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
         versionName version
@@ -58,3 +39,14 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
 }
+
+// bintray-release
+//publish {
+//    groupId = 'com.github.adbeacon'
+//    artifactId = 'adbeacon'
+//    publishVersion = version
+//    desc = 'A small library containing BLE beacon scaner for Android'
+//    licences = ['Apache-2.0']
+//    website = 'https://github.com/ilyamikhdev/adbeacon'
+//}
+
