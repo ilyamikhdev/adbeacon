@@ -20,12 +20,10 @@ android {
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "bool", "is_debug", "false"
         }
 
         debug {
             debuggable true
-            resValue "bool", "is_debug", "true"
         }
     }
 }

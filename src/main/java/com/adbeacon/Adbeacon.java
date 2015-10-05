@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
@@ -12,7 +14,7 @@ import org.altbeacon.beacon.BeaconManager;
 import java.util.UUID;
 
 public class Adbeacon {
-    public static final int REQUEST_ENABLE_BT = 151002;
+    public static final int REQUEST_ENABLE_BT = 1;
 
     public static String getDeviceUUID(Context context) {
         String deviceId = null;
@@ -100,5 +102,28 @@ public class Adbeacon {
 
     public static void startScan(Activity activity) {
         activity.startService(new Intent(activity, AdbeaconService.class));
+    }
+
+    public static void stopScan(Activity activity) {
+        activity.stopService(new Intent(activity, AdbeaconService.class));
+    }
+
+    public static String getApplicationName(Context context) {
+        int stringId = context.getApplicationInfo().labelRes;
+        return context.getString(stringId);
+    }
+
+    public static boolean isDebuggable(Context ctx) {
+        boolean debuggable = false;
+
+        PackageManager pm = ctx.getPackageManager();
+        try {
+            ApplicationInfo appinfo = pm.getApplicationInfo(ctx.getPackageName(), 0);
+            debuggable = (0 != (appinfo.flags & ApplicationInfo.FLAG_DEBUGGABLE));
+        } catch (PackageManager.NameNotFoundException e) {
+        /*debuggable variable will remain false*/
+        }
+
+        return debuggable;
     }
 }

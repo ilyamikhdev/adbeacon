@@ -37,17 +37,19 @@ import retrofit.client.Response;
 
 public class AdbeaconService extends Service implements BeaconConsumer, RangeNotifier, IListnerLoadBeacons {
     public static final String UUID_BLE = "EBEFD083-70A2-47C8-2015-E7B5634DF524";
-    private org.altbeacon.beacon.BeaconManager mBeaconManager;
-
     private static int NOTIFICATION_ID = 123;
-    private NotificationManager mNotificationManager;
-    private Region mRegion = new Region("com.adbeacon", Identifier.parse(UUID_BLE), null, null);
 
-    private Timer mTimer;
+    private org.altbeacon.beacon.BeaconManager mBeaconManager;
+    private NotificationManager mNotificationManager;
+
+    private Region mRegion = new Region("com.adbeacon", Identifier.parse(UUID_BLE), null, null);
     private HashSet<Beacon> mBeacons = new HashSet<Beacon>();
+    private Timer mTimer;
 
     private String mToken = "empty";
     private String mDeviceId = "empty";
+    private String mAppName = "";
+    private boolean mIsDebug = false;
 
     public AdbeaconService() {
     }
@@ -61,7 +63,6 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        LOG.i("onStartCommand");
         super.onStartCommand(intent, flags, startId);
 
         //if (mBeaconManager.isBound(this))
@@ -72,11 +73,12 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
     @Override
     public void onCreate() {
-        LOG.i("onCreate");
         super.onCreate();
+        mIsDebug = Adbeacon.isDebuggable(getApplicationContext());
 
-        LOG.enableDebugLogging(getResources().getBoolean(R.bool.is_debug));
+        LOG.enableDebugLogging(mIsDebug);
 
+        mAppName = Adbeacon.getApplicationName(getApplicationContext());
         mToken = Adbeacon.getDeviceName();
         mDeviceId = Adbeacon.getDeviceUUID(this);
 
@@ -90,7 +92,6 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
     @Override
     public void onDestroy() {
-        LOG.i("onDestroy");
         super.onDestroy();
         mBeaconManager.unbind(this);
         if (mTimer != null)
@@ -101,11 +102,8 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void postNotification(String title, String msg, String url) {
         try {
-            //int id = NOTIFICATION_ID;
             int requestId = (int) System.currentTimeMillis();
             PendingIntent pendingIntent;
-
-            //id = NOTIFICATION_ID++;
 
             Intent notifyIntent = new Intent(Intent.ACTION_VIEW);
             notifyIntent.setData(Uri.parse(url));
@@ -116,27 +114,23 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
                     new Intent[]{notifyIntent},
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
-
+            String text = msg + "\n" + mAppName + ".";
             Notification.Builder builder = new Notification.Builder(this)
                     .setSmallIcon(R.drawable.ic_stat_action_loyalty)
                     .setContentTitle(title)
-                    .setContentText(msg)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
+                    //.setContentText(text)
                     //.setStyle(new Notification.BigTextStyle().bigText(msg))
                     ;
 
             Notification notification = new Notification.BigTextStyle(builder)
-                    .bigText(msg).build();
-//        Notification notification = new Notification.BigPictureStyle(builder)
-//                .bigPicture(BitmapFactory.decodeResource(getResources(),
-//                                R.drawable.kupanda)).build();
+                    .bigText(text).build();
 
             notification.defaults |= Notification.DEFAULT_SOUND;
             notification.defaults |= Notification.DEFAULT_LIGHTS;
             //notification.defaults |= Notification.DEFAULT_VIBRATE;
             mNotificationManager.notify(NOTIFICATION_ID++, notification);
-
 
         } catch (Exception e) {
             LOG.e(e.getMessage());
@@ -145,12 +139,10 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
     @Override
     public void onBeaconServiceConnect() {
-
         mBeaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
-                LOG.i("I just saw a beacon named " + region.getUniqueId() + " for the first time!");
-                //postNotification("Monitor", "Enter Region");
+                //LOG.i("I just saw a beacon named " + region.getUniqueId() + " for the first time!");
                 try {
                     mBeaconManager.startRangingBeaconsInRegion(mRegion);
                     mBeaconManager.setRangeNotifier(AdbeaconService.this);
@@ -161,8 +153,7 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
             @Override
             public void didExitRegion(Region region) {
-                LOG.i("I no longer see a beacon named " + region.getUniqueId());
-                //postNotification("Monitor", "Exit Region");
+                //LOG.i("I no longer see a beacon named " + region.getUniqueId());
                 try {
                     mBeaconManager.stopRangingBeaconsInRegion(mRegion);
                 } catch (RemoteException e) {
@@ -171,9 +162,8 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
             @Override
             public void didDetermineStateForRegion(int state, Region region) {
-                LOG.i("I have just switched from seeing/not seeing beacons: " + state);
+                //LOG.i("I have just switched from seeing/not seeing beacons: " + state);
             }
-
         });
 
         try {
@@ -189,9 +179,7 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
 
     private synchronized void startRange() {
         try {
-            count = 0;
             mBeacons.clear();
-            //mBeaconManager.startRangingBeaconsInRegion(mRegion);
 
             mTimer = new Timer();
             mTimer.schedule(new TimerTask() {
@@ -210,11 +198,7 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
         }
     }
 
-    int count = 0;
-
-    public synchronized void putBeacons(Collection<Beacon> beacons) {
-        LOG.i("count = " + count++);
-
+    private synchronized void putBeacons(Collection<Beacon> beacons) {
         if (beacons.size() > 0) {
             for (Beacon beacon : beacons) {
                 if (!mBeacons.contains(beacon))
@@ -223,7 +207,7 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
         }
     }
 
-    public synchronized void loadBeaconData(Collection<Beacon> beacons) {
+    private synchronized void loadBeaconData(Collection<Beacon> beacons) {
         if (beacons != null && beacons.size() > 0) {
             try {
                 mBeaconManager.stopRangingBeaconsInRegion(mRegion);
@@ -249,8 +233,8 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
                             if (itemsResponse.result.error == 0)
                                 listner.loaded(itemsResponse.result.data);
                             else {
-                                if (getResources().getBoolean(R.bool.is_debug))
-                                    postNotification("Ошибка " + itemsResponse.result.error, itemsResponse.result.error_message, "");
+                                if (mIsDebug)
+                                    postNotification(getString(R.string.error) + itemsResponse.result.error, itemsResponse.result.error_message, "");
                             }
                         }
                     }
@@ -260,8 +244,8 @@ public class AdbeaconService extends Service implements BeaconConsumer, RangeNot
                 @Override
                 public void failure(RetrofitError error) {
                     LOG.e("loadBeaconText failure");
-                    if (getResources().getBoolean(R.bool.is_debug))
-                        postNotification("Ошибка загрузки с сервера!", error.getLocalizedMessage(), "");
+                    if (mIsDebug)
+                        postNotification(getString(R.string.error_server), error.getLocalizedMessage(), "");
                 }
             };
 
