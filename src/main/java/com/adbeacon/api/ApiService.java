@@ -1,6 +1,7 @@
 package com.adbeacon.api;
 
-import com.adbeacon.model.BeaconText;
+import com.adbeacon.model.BeaconArrayResult;
+import com.adbeacon.model.BeaconTextResult;
 
 import java.util.ArrayList;
 
@@ -16,5 +17,10 @@ public interface ApiService {
                          @Query("deviceId") String deviceId,
                          @Query("userId") int userId,
                          @Query(encodeValue = false, value = "arrayBeacon[]") ArrayList<String> arrayBeacon,
-                         Callback<BeaconText> callback);
+                         Callback<BeaconTextResult> callback);
+
+    @GET("/")
+    void getNotice(@Query("api_key") String apiKey,
+                   @Query("method") String method,
+                   Callback<BeaconArrayResult> callback);
 }

@@ -15,6 +15,9 @@ public class BluetoothReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (!Adbeacon.isAllowService(context) || !BeaconManager.getInstanceForApplication(context).checkAvailability())
+            return;
+
         final String action = intent.getAction();
 
         if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
@@ -23,18 +26,23 @@ public class BluetoothReceiver extends BroadcastReceiver {
             switch (state) {
                 case BluetoothAdapter.STATE_OFF:
                     LOG.d("Bluetooth off");
+                    try {
+                        if (BeaconManager.getInstanceForApplication(context).checkAvailability())
+                            context.stopService(new Intent(context, AdbeaconService.class));
+                    } catch (RuntimeException e) {
+                        LOG.e(e.getMessage());
+                    }
                     break;
                 case BluetoothAdapter.STATE_TURNING_OFF:
                     LOG.d("Turning Bluetooth off...");
                     break;
                 case BluetoothAdapter.STATE_ON:
                     LOG.d("Bluetooth on");
-                    if (Adbeacon.isAllowService(context)) {
-                        try {
-                            if (BeaconManager.getInstanceForApplication(context).checkAvailability())
-                                context.startService(new Intent(context, AdbeaconService.class));
-                        } catch (RuntimeException e) {
-                        }
+                    try {
+                        if (BeaconManager.getInstanceForApplication(context).checkAvailability())
+                            context.startService(new Intent(context, AdbeaconService.class));
+                    } catch (RuntimeException e) {
+                        LOG.e(e.getMessage());
                     }
                     break;
                 case BluetoothAdapter.STATE_TURNING_ON:

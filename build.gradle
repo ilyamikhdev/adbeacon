@@ -36,11 +36,14 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0+'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
+
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
 }
 
 // bintray-release
 //publish {
-//    groupId = 'com.github.adbeacon'
+//    groupId = 'com.github.ilyamikhdev'
 //    artifactId = 'adbeacon'
 //    publishVersion = version
 //    desc = 'A small library containing BLE beacon scaner for Android'

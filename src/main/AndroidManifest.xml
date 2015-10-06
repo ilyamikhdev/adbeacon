@@ -2,7 +2,8 @@
     package="com.adbeacon">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -19,15 +20,11 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name="org.altbeacon.beacon.service.BeaconService"
-            android:enabled="true"
-            android:isolatedProcess="false"
-            android:label="beacon"></service>
-
-        <service
-            android:name="org.altbeacon.beacon.BeaconIntentProcessor"
-            android:enabled="true"></service>
+        <receiver android:name=".receiver.UpdateReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name="org.altbeacon.beacon.startup.StartupBroadcastReceiver">
             <intent-filter>
@@ -36,6 +33,17 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="org.altbeacon.beacon.service.BeaconService"
+            android:enabled="true"
+            android:isolatedProcess="false"
+            android:label="beacon" />
+
+        <service
+            android:name="org.altbeacon.beacon.BeaconIntentProcessor"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

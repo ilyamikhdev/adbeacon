@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
@@ -74,7 +76,7 @@ public class Adbeacon {
     public static boolean isAllowService(Context context) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
 //                && BuildSettings.isBeta(context)
-//                && !Utils.isServiceRunning(context, KupandaService.class)
+//                && !Utils.isServiceRunning(context, AdbeaconService.class)
                 )
             return true;
         else
@@ -125,5 +127,12 @@ public class Adbeacon {
         }
 
         return debuggable;
+    }
+
+    public static boolean isOnline(Context ctx) {
+        ConnectivityManager cm =
+                (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

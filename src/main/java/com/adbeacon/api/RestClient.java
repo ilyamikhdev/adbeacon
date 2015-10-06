@@ -1,7 +1,10 @@
 package com.adbeacon.api;
 
+import android.util.Base64;
+
 import com.adbeacon.LOG;
-import com.adbeacon.model.BeaconText;
+import com.adbeacon.model.BeaconArrayResult;
+import com.adbeacon.model.BeaconTextResult;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.ArrayList;
@@ -19,7 +22,7 @@ public class RestClient {
     private final static int TIMEOUT = 30000;
     private final static String API_URL = "http://apimobile.kupanda.ru/api";
     private final static String API_KEY = "ca3e173c79f471cc04d53ce6b349d9cf";
-    //private final static String BASIC_AUTH = "content:avsqsnD9P8tCvBfaZ92OL75OwLahvCAX9yG2gr2P";
+    private final static String BASIC_AUTH = "";
 
     private static RestClient mInstance;
 
@@ -56,7 +59,7 @@ public class RestClient {
                     @Override
                     public void intercept(RequestFacade request) {
                         request.addHeader("Accept", "application/json");
-                        //request.addHeader("Authorization", encodeCredentialsForBasicAuthorization());
+                        request.addHeader("Authorization", encodeCredentialsForBasicAuthorization());
                     }
                 })
                 .setEndpoint(endpointUrl)
@@ -66,12 +69,16 @@ public class RestClient {
                 .create(ApiService.class);
     }
 
-//    private String encodeCredentialsForBasicAuthorization() {
-//        return "Basic " + Base64.encodeToString(BASIC_AUTH.getBytes(), Base64.NO_WRAP);
-//    }
+    private String encodeCredentialsForBasicAuthorization() {
+        return "Basic " + Base64.encodeToString(BASIC_AUTH.getBytes(), Base64.NO_WRAP);
+    }
 
-    public void getBeaconPhrase(String token, String deviceId, int userId, ArrayList<String> arrayBeacon, Callback<BeaconText> callback) {
+    public void getNoticeByBeacon(String token, String deviceId, int userId, ArrayList<String> arrayBeacon, Callback<BeaconTextResult> callback) {
         mApi.getBeaconPhrase(API_KEY, "ibeacon_zone_register_vizit", token, deviceId, userId, arrayBeacon, callback);
+    }
+
+    public void getNotices(Callback<BeaconArrayResult> callback) {
+        mApi.getNotice(API_KEY, "get_ibeacons", callback);
     }
 
 }
