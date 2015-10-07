@@ -22,12 +22,16 @@ Library scans BLE device (Beacons) and displays messages that are downloaded fro
         super.onActivityResult(requestCode, resultCode, data);
     }
 ```
-## 2. Manifest
+## 2. AndroidManifest.xml
 ```xml
+    ...
+    <application>
         <service
             android:name="com.adbeacon.AdbeaconService"
             android:enabled="true"
             android:exported="false" />
+     </application>
+     ...
 ```
 ## 3. Done
 ![alt tag](https://github.com/ilyamikhdev/adbeacon/blob/master/screenshot_example.png?raw=true)
