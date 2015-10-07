@@ -30,4 +30,4 @@ Library scans BLE device (Beacons) and displays messages that are downloaded fro
             android:exported="false" />
 ```
 ## 3. Done
-Adbeacon requires at minimum Android 4.0.
+![alt tag](https://github.com/ilyamikhdev/adbeacon/blob/master/screenshot_example.png?raw=true)
