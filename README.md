@@ -1,5 +1,6 @@
 # Adbeacon
 Library scans BLE device (Beacons) and displays messages that are downloaded from the server kupanda.ru.
+
 Библиотека сканирует BLE устройства(Beacons) и показывает сообщения, которые загружены с сервера kupanda.ru.
 
 ## 1. Add to launcher Activity
