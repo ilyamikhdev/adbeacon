@@ -3,6 +3,17 @@ Library scans BLE device (Beacons) and displays messages that are downloaded fro
 
 Библиотека сканирует BLE устройства(Beacons) и показывает сообщения, которые загружены с сервера kupanda.ru.
 
+##Download
+Gradle:
+```gradle
+    repositories {
+         maven { url 'https://dl.bintray.com/ilyamikhdev/maven/' }
+    }
+    dependencies {
+        compile 'com.github.ilyamikhdev:adbeacon:1.0.4'
+    }
+    
+```
 ## 1. Add to launcher Activity
 ```java
     @Override
