@@ -1,8 +1,32 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
-// This is the library version used when deploying the artifact
-version = "1.0.1"
+version = '1.0.4' // Change this to match your version number
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'adbeacon'
+
+    publishedGroupId = 'com.github.ilyamikhdev'
+    libraryName = 'adbeacon'
+    artifact = 'adbeacon'
+
+    libraryDescription = 'Library scans BLE device (Beacons) and displays messages that are downloaded from the server kupanda.ru'
+
+    siteUrl = 'https://github.com/ilyamikhdev/adbeacon'
+    gitUrl = 'https://github.com/ilyamikhdev/adbeacon.git'
+
+    libraryVersion = version
+
+    developerId = 'ilyamikhdev'
+    developerName = 'Ilya'
+    developerEmail = 'i.mikh.dev@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
 
 android {
     compileSdkVersion 23
@@ -11,7 +35,7 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
+        versionCode 4
         versionName version
     }
 
@@ -41,13 +65,6 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-android:4.48'
 }
 
-// bintray-release
-//publish {
-//    groupId = 'com.github.ilyamikhdev'
-//    artifactId = 'adbeacon'
-//    publishVersion = version
-//    desc = 'A small library containing BLE beacon scaner for Android'
-//    licences = ['Apache-2.0']
-//    website = 'https://github.com/ilyamikhdev/adbeacon'
-//}
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
 
